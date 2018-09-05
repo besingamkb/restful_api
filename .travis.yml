@@ -10,6 +10,9 @@ dist: 'bionic'
 before_install:
   - 'cp .env.example .env'
   - mysql -e 'create database restful_oauth_testing;'
+  - mysql -e "CREATE USER 'homestead'@'localhost' IDENTIFIED BY 'secret';"
+  - mysql -e "GRANT ALL PRIVILEGES ON restful_oauth_testing . * TO 'homestead'@'localhost';"
+  - mysql -e "FLUSH PRIVILEGES;"
   - 'composer install'
   - 'composer update'
   - 'php artisan key:generate'
