@@ -17,9 +17,6 @@ before_install:
   - 'php artisan key:generate'
   - 'php artisan migrate --database=mysql_testing'
 
-install:
-  - 'php artisan passport:install'
-
 services:
   - mysql
 
