@@ -1,0 +1,10 @@
+language: php
+php:
+  - '7.1.3'
+os: 'linux'
+dist: 'xenial'
+before_install:
+  - 'composer install'
+  - 'composer update'
+  - 'cp .env.example .env'
+  - 'php artisan key:generate'
