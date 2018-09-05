@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Client;
 use App\Phonenumber;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -196,6 +197,101 @@ class AdminApiTest extends TestCase
         });
 
         $response = $this->json('DELETE', '/api/phonenumbers/' . $users[1]->id);
+        $response
+            ->assertOk();
+    }
+
+    /**
+     *
+     * ******************
+     * Admin Phonenumbers Section
+     * ******************
+     *
+     */
+    /** @test */
+    public function admin_can_get_clients_that_paginate_by_10()
+    {
+        factory(User::class, 5)->create(['role' => 'user'])->each(function ($user) {
+            factory(Client::class, 10)->create()->each(function ($client) use ($user) {
+                $this->current_user->addClient($client);
+            });
+        });
+
+        $response = $this->json('GET', '/api/clients');
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(10, 'clients.data');
+    }
+
+    /** @test */
+    public function admin_can_get_his_own_clients_only()
+    {
+        factory(Client::class, 10)->create()->each(function ($client) {
+            $this->current_user->addClient($client);
+        });
+        $response = $this->json('GET', '/api/clients');
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(10, 'clients.data');
+    }
+
+    /** @test */
+    public function admin_can_add_client()
+    {
+        $response = $this->json('POST', '/api/clients', [
+            'name' => 'new client'
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonFragment([
+                'message' => "New client successfully added!"
+            ]);
+    }
+
+    /** @test */
+    public function admin_can_get_any_client_by_id()
+    {
+        $users = factory(User::class, 10)->create(['role' => 'user'])->each(function ($user) {
+            factory(Client::class, 5)->create()->each(function ($client) use ($user) {
+                $user->addClient($client);
+            });
+        });
+
+        $response = $this->json('GET', '/api/clients/' . $users[1]->id);
+        $response
+            ->assertOk();
+    }
+
+    /** @test */
+    public function admin_can_update_any_client()
+    {
+        $clients = null;
+        $users = factory(User::class, 2)->create(['role' => 'user'])->each(function($user) use ($clients) {
+            $clients = factory(Client::class, 5)->create()->each(function ($client) use ($user) {
+                $user->addClient($client);
+            });
+        });
+
+        $response = $this->json('PUT', '/api/clients/' . $users[0]->clients()->first()->id, [
+            'name' => 'Updated Clientname'
+        ]);
+
+        $response
+            ->assertOk();
+    }
+
+    public function admin_can_delete_any_client()
+    {
+        $users = factory(User::class, 2)->create(['role' => 'user'])->each(function($user) {
+            factory(Client::class, 5)->create()->each(function ($client) use ($user) {
+                $user->addClient($client);
+            });
+        });
+
+        $response = $this->json('DELETE', '/api/clients/' . $users[1]->id);
         $response
             ->assertOk();
     }

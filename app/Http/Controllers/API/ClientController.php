@@ -56,6 +56,7 @@ class ClientController extends Controller
         $client->save();
 
         return response()->json([
+            'message' => 'New client successfully added!',
             'client' => $client
         ]);
     }
