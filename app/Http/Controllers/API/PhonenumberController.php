@@ -17,19 +17,17 @@ class PhonenumberController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * @throws AuthorizationException
      */
     public function index()
     {
         $user = Auth::user();
-
-        if ($user->role === "admin") {
-            $phonenumbers = Phonenumber::paginate(10);
-            return response()->json([
-                'phonenumbers' => $phonenumbers
-            ]);
-        }
-
         $phonenumbers = Phonenumber::where('user_id', $user->id)->paginate(10);
+
+        $this->authorize('view', [
+            $user, $phonenumbers
+        ]);
+        
         return response()->json([
             'phonenumbers' => $phonenumbers
         ]);
