@@ -1,13 +1,26 @@
 language: php
+
 php:
   - '7.2'
+
 os: 'linux'
+
 dist: 'bionic'
+
 before_install:
+  - 'cp .env.example .env'
+  - mysql -e 'create database restful_oauth_testing;'
   - 'composer install'
   - 'composer update'
-  - 'cp .env.example .env'
   - 'php artisan key:generate'
   - 'php artisan migrate'
+
 install:
   - 'php artisan passport:install'
+
+services:
+  - mysql
+
+cache:
+  directories:
+    - vendor
