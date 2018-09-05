@@ -16,7 +16,7 @@ before_install:
   - 'composer install'
   - 'composer update'
   - 'php artisan key:generate'
-  - 'php artisan migrate'
+  - 'php artisan migrate --database=mysql_testing'
 
 install:
   - 'php artisan passport:install'
